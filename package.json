@@ -19,4 +19,3 @@
     "cookie-parser": "^1.4.6"
   }
 }
-Error: /opt/render/project/src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: invalid ELF header
