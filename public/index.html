@@ -1,430 +1,319 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CRM Dashboard</title>
-  <!-- Importa il font Montserrat -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- stile identico a Knowledge -->
   <style>
-    /* Stile moderno con colori blu, bianco e nero */
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: #f5f7fa;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #e0e0e0;
-      padding-bottom: 10px;
-    }
-    .nav-links a {
-      text-decoration: none;
-      color: #1a73e8;
-      font-weight: 600;
-      margin-right: 15px;
-    }
-    h1 {
-      font-weight: 600;
-      font-size: 28px;
-      color: #1a1a1a;
-    }
-    .button {
-      padding: 10px 20px;
-      border: none;
-      background: #1a73e8;
-      color: #fff;
-      border-radius: 25px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.3s;
-      outline: none;
-    }
-    .button:hover {
-      background: #1669c1;
-    }
-    .client-item {
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: box-shadow 0.3s;
-    }
-    .client-item:hover {
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .client-item strong {
-      font-size: 16px;
-      color: #1a1a1a;
-    }
-    .delete-btn {
-      padding: 6px 12px;
-      background: #e53935;
-      border: none;
-      color: #fff;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: background 0.3s;
-    }
-    .delete-btn:hover {
-      background: #c62828;
-    }
-    /* Modal styling */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-    }
-    .modal-content {
-      background: #fff;
-      margin: 5% auto;
-      padding: 20px;
-      width: 90%;
-      max-width: 600px;
-      border-radius: 12px;
-      max-height: 80vh;
-      overflow-y: auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      position: relative;
-    }
-    .close {
-      position: absolute;
-      right: 15px;
-      top: 10px;
-      font-size: 28px;
-      cursor: pointer;
-      color: #333;
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      font-size: 14px;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      box-sizing: border-box;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-    }
-    input:focus, textarea:focus {
-      border-color: #1a73e8;
-    }
+    body{font-family:'Montserrat',sans-serif;background:#f5f7fa;margin:0;padding:20px;color:#333}
+    .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:2px solid #e0e0e0;padding-bottom:10px}
+    .nav-links a{text-decoration:none;color:#1a73e8;font-weight:600;margin-right:15px}
+    h1{font-weight:600;font-size:28px;color:#1a1a1a;margin-bottom:20px}
+
+    .button{padding:10px 20px;border:none;background:#1a73e8;color:#fff;border-radius:25px;font-size:14px;cursor:pointer;transition:.3s}
+    .button:hover{background:#1669c1}
+    .button-danger{background:#e53935}.button-danger:hover{background:#c62828}
+    select{padding:10px 18px;border:1px solid #ccc;border-radius:25px;font-size:14px;margin-right:10px;background:#fff}
+    select:focus{border-color:#1a73e8}
+
+    .client-item{background:#fff;border:1px solid #e0e0e0;border-radius:12px;margin-bottom:12px;padding:15px;
+                 display:flex;justify-content:space-between;align-items:center;transition:.3s}
+    .client-item:hover{box-shadow:0 4px 8px rgba(0,0,0,.1)}
+
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5)}
+    .modal-content{background:#fff;margin:5% auto;padding:20px;width:90%;max-width:600px;border-radius:12px;
+                   max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+    .close{position:absolute;right:15px;top:10px;font-size:28px;cursor:pointer;color:#333}
+
+    label{display:block;margin:10px 0 5px;font-size:14px}
+    input,textarea{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:14px}
+    input:focus,textarea:focus{border-color:#1a73e8}
+
+    #conversationContainer{max-height:250px;overflow-y:auto;border:1px solid #e0e0e0;border-radius:8px;padding:10px;background:#fff}
+    .conversation{margin-bottom:8px;padding:6px;border-radius:6px;background:#f0f4ff}
+    .user-msg{background:#e3f2fd;padding:4px;border-radius:4px;margin-bottom:2px}
+    .bot-msg{background:#dcedc8;padding:4px;border-radius:4px}
   </style>
 </head>
+
 <body>
+  <!-- Barra in alto -->
   <div class="top-bar">
     <div class="nav-links">
       <a href="index.html">Dashboard</a>
       <a href="knowledge.html">Knowledge Base</a>
     </div>
-    <div>
+    <div style="display:flex;gap:10px;align-items:center;">
       <button class="button" onclick="openAddClientModal()">Aggiungi Cliente</button>
       <select id="filterSelect" onchange="applyFilter()">
         <option value="date">Ordina per Data</option>
-        <option value="alphabet">Ordina A-Z</option>
+        <option value="alphabet">Ordina A‑Z</option>
       </select>
+      <button class="button button-danger" onclick="logout()">Logout</button>
     </div>
   </div>
+
   <h1>Dashboard Clienti</h1>
   <div id="clientList"></div>
 
-  <!-- Modal: Aggiungi Cliente -->
+  <!-- Modal Aggiungi Cliente -->
   <div id="addClientModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeAddClientModal()">&times;</span>
       <h2>Aggiungi Cliente</h2>
       <form id="addClientForm">
-        <label>Nome:</label>
-        <input type="text" name="nome" required>
-        <label>Numero:</label>
-        <input type="text" name="numero" required>
         <label>ID Voiceflow:</label>
-        <input type="text" name="id_voiceflow" required>
-        <button class="button" type="submit">Aggiungi Cliente</button>
+        <input id="id_voiceflow" required />
+        <button class="button" type="submit">Crea Cliente</button>
       </form>
     </div>
   </div>
 
-  <!-- Modal: Modifica Cliente (Dettagli, Conversazioni, Progetti) -->
+  <!-- Modal Modifica Cliente -->
   <div id="editClientModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeEditClientModal()">&times;</span>
       <h2>Dettagli Cliente</h2>
-      <div id="clientDetails"></div>
-      <hr>
+      <div id="clientDetails"></div><hr>
+      <h3>Aggiorna Informazioni</h3>
+      <form id="updateClientForm">
+        <label>Nome:</label><input id="updateNome" />
+        <label>Numero:</label><input id="updateNumero" />
+        <button class="button" type="submit">Salva</button>
+      </form>
+      <div id="summarySection">
+        <h3>Riassunto</h3>
+        <textarea id="summaryText"></textarea>
+        <button class="button" onclick="updateSummary()">Salva Riassunto</button>
+      </div><hr>
       <h3>Conversazioni</h3>
-      <!-- Contenitore scrollabile per le conversazioni -->
-      <div id="conversationContainer" style="max-height:250px; overflow-y:auto; border:1px solid #e0e0e0; padding:10px; margin-bottom:10px; background:#fafafa;">
-        <div id="conversationList"></div>
-      </div>
-      <div id="addConversationSection" style="margin-bottom:10px;">
-        <button class="button" onclick="toggleAddConversationForm()">Aggiungi Conversazione</button>
-        <div id="addConversationForm" style="display:none; margin-top:10px;">
-          <label>Messaggio Utente:</label>
-          <textarea id="convUser" style="height:60px;" required></textarea>
-          <label>Messaggi Bot (una per riga):</label>
-          <textarea id="convBot" style="height:60px;" required></textarea>
-          <button class="button" type="button" onclick="addConversation()">Aggiungi</button>
-        </div>
-      </div>
-      <hr>
-      <h3>Progetti</h3>
-      <div id="projectList" style="max-height:200px; overflow-y:auto; border:1px solid #e0e0e0; padding:10px; background:#fafafa;"></div>
-      <button class="button" onclick="toggleAddProjectForm()">Aggiungi Progetto</button>
-      <div id="addProjectForm" style="display:none; margin-top:10px;">
-        <label>Nome Progetto:</label>
-        <input type="text" id="projectName" required>
-        <button class="button" type="button" onclick="addProject()">Aggiungi</button>
+      <div id="conversationContainer"><div id="conversationList"></div></div>
+      <button class="button" onclick="toggleAddConversationForm()">Aggiungi Conversazione</button>
+      <div id="addConversationForm" style="display:none;margin-top:10px;">
+        <label>Messaggio Utente:</label><textarea id="convUser" rows="3"></textarea>
+        <label>Messaggi Bot (uno per riga):</label><textarea id="convBot" rows="3"></textarea>
+        <button class="button" type="button" onclick="addConversation()">Aggiungi</button>
       </div>
     </div>
   </div>
 
+  <!-- JavaScript DOPO i modali  -->
   <script>
-    let clients = [];
-    let currentClientId = null;
+    /* ---------- FETCH helper ---------- */
+    const fetchAuth = (u, o={}) => fetch(u, {credentials: 'same-origin', ...o});
 
-    async function loadClients() {
-      try {
-        const res = await fetch('/api/clients');
-        if (!res.ok) throw new Error("Errore nel caricamento dei clienti");
-        clients = await res.json();
+    /* ---------- MODAL refs ---------- */
+    const addModal  = document.getElementById('addClientModal');
+    const editModal = document.getElementById('editClientModal');
+    const openAddClientModal   = () => addModal.style.display  = 'block';
+    const closeAddClientModal  = () => addModal.style.display  = 'none';
+    const openEditClientModal  = () => editModal.style.display = 'block';
+    const closeEditClientModal = () => editModal.style.display = 'none';
+    window.onclick = e => {
+      if (e.target === addModal)  closeAddClientModal();
+      if (e.target === editModal) closeEditClientModal();
+    };
+
+    /* ---------- STATE ---------- */
+    let clients = []; let currentId = null;
+
+    /* ---------- LOAD & RENDER ---------- */
+    async function loadClients(){
+      try{
+        const r = await fetchAuth('/api/clients');
+        if(!r.ok) throw new Error();
+        clients = await r.json();
         applyFilter();
-      } catch (e) {
-        console.error(e);
-      }
+      }catch(err){ console.error(err); }
     }
-
-    function renderClients(clientsToRender) {
-      const list = document.getElementById('clientList');
-      list.innerHTML = '';
-      clientsToRender.forEach(client => {
-        const div = document.createElement('div');
-        div.className = 'client-item';
-        div.innerHTML = `<strong>${client.nome}</strong>`;
-        // Pulsante per aprire la modale di modifica
-        const editBtn = document.createElement('button');
-        editBtn.className = 'button';
-        editBtn.style.marginRight = '10px';
-        editBtn.textContent = 'Modifica';
-        editBtn.onclick = () => openEditClientModal(client.id);
-        // Pulsante per eliminare il cliente
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.textContent = 'Elimina';
-        deleteBtn.onclick = () => deleteClient(client.id);
-        // Contenitore per i pulsanti
-        const btnContainer = document.createElement('div');
-        btnContainer.appendChild(editBtn);
-        btnContainer.appendChild(deleteBtn);
-        // Imposta layout flessibile per nome e pulsanti
-        div.appendChild(btnContainer);
-        list.appendChild(div);
-      });
-    }
-
-    function applyFilter() {
-      const filter = document.getElementById('filterSelect').value;
-      let sorted = [...clients];
-      if (filter === 'alphabet') {
-        sorted.sort((a, b) => a.nome.localeCompare(b.nome));
-      } else {
-        sorted.sort((a, b) => new Date(b.data_modifica) - new Date(a.data_modifica));
-      }
+    function applyFilter(){
+      const mode = document.getElementById('filterSelect').value;
+      const sorted = [...clients].sort(
+        mode==='alphabet'
+          ? (a,b)=>(a.nome||'').localeCompare(b.nome||'')
+          : (a,b)=>new Date(b.data_modifica)-new Date(a.data_modifica)
+      );
       renderClients(sorted);
     }
-
-    // Funzione per eliminare un cliente
-    async function deleteClient(id) {
-      if (!confirm("Sei sicuro di voler eliminare questo cliente?")) return;
-      try {
-        const res = await fetch(`/api/clients/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error("Errore nell'eliminazione del cliente");
-        await res.json();
-        loadClients();
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    // Chiusura delle modali cliccando fuori dal contenuto
-    window.onclick = function(event) {
-      const modals = document.getElementsByClassName('modal');
-      for (let modal of modals) {
-        if (event.target === modal) {
-          modal.style.display = 'none';
-        }
-      }
-    }
-
-    // Modal per Aggiungere Cliente
-    function openAddClientModal() {
-      document.getElementById('addClientModal').style.display = 'block';
-    }
-    function closeAddClientModal() {
-      document.getElementById('addClientModal').style.display = 'none';
-    }
-
-    // Modal per Modificare Cliente
-    async function openEditClientModal(id) {
-      currentClientId = id;
-      try {
-        const res = await fetch(`/api/clients/${id}`);
-        if (!res.ok) throw new Error("Errore nel recupero del cliente");
-        const client = await res.json();
-        document.getElementById('clientDetails').innerHTML = `
-          <p><strong>Nome:</strong> ${client.nome}</p>
-          <p><strong>Numero:</strong> ${client.numero}</p>
-          <p><strong>ID Voiceflow:</strong> ${client.id_voiceflow}</p>
-          <p><strong>Data Modifica:</strong> ${new Date(client.data_modifica).toLocaleString()}</p>
-        `;
-        // Conversazioni
-        const convList = document.getElementById('conversationList');
-        convList.innerHTML = '';
-        if (client.conversazioni && Array.isArray(client.conversazioni)) {
-          client.conversazioni.forEach(conv => {
-            const convDiv = document.createElement('div');
-            convDiv.className = 'conversation';
-            convDiv.innerHTML = `
-              <div class="user-msg"><strong>User:</strong> ${conv.user}</div>
-              ${Array.isArray(conv.bot) ? conv.bot.map(botMsg => `<div class="bot-msg"><strong>Bot:</strong> ${botMsg}</div>`).join('') : ''}
-            `;
-            convList.appendChild(convDiv);
-          });
-        }
-        // Progetti
-        const projList = document.getElementById('projectList');
-        projList.innerHTML = '';
-        if (client.progetti && Array.isArray(client.progetti)) {
-          client.progetti.forEach(proj => {
-            const projDiv = document.createElement('div');
-            projDiv.className = 'project-item';
-            projDiv.innerHTML = `<strong>Progetto:</strong> ${proj.projectName}`;
-            projList.appendChild(projDiv);
-          });
-        }
-        document.getElementById('editClientModal').style.display = 'block';
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    function closeEditClientModal() {
-      document.getElementById('editClientModal').style.display = 'none';
-    }
-
-    // Toggle per il form di aggiunta conversazione
-    function toggleAddConversationForm() {
-      const form = document.getElementById('addConversationForm');
-      form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
-    }
-
-    // Aggiunta di una Conversazione
-    async function addConversation() {
-      const userMsg = document.getElementById('convUser').value.trim();
-      const botMsg = document.getElementById('convBot').value.split('\n').filter(x => x.trim() !== '');
-      if (!userMsg || botMsg.length === 0) return alert("Inserisci almeno un messaggio per ciascun campo.");
-      try {
-        const res = await fetch(`/api/clients/${currentClientId}`);
-        if (!res.ok) throw new Error("Impossibile recuperare i dati del cliente");
-        const client = await res.json();
-        if (!Array.isArray(client.conversazioni)) client.conversazioni = [];
-        const newConv = { id: Date.now(), user: userMsg, bot: botMsg };
-        client.conversazioni.push(newConv);
-        const updateRes = await fetch(`/api/clients/${currentClientId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ conversazioni: client.conversazioni })
-        });
-        if (updateRes.ok) {
-          document.getElementById('convUser').value = '';
-          document.getElementById('convBot').value = '';
-          document.getElementById('addConversationForm').style.display = 'none';
-          openEditClientModal(currentClientId);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    // Toggle per il form di aggiunta progetto
-    function toggleAddProjectForm() {
-      const form = document.getElementById('addProjectForm');
-      form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
-    }
-
-    // Aggiunta di un Progetto
-    async function addProject() {
-      const projectName = document.getElementById('projectName').value.trim();
-      if (!projectName) return alert("Inserisci il nome del progetto");
-      try {
-        const res = await fetch(`/api/clients/${currentClientId}`);
-        if (!res.ok) throw new Error("Impossibile recuperare il cliente");
-        const client = await res.json();
-        if (!Array.isArray(client.progetti)) client.progetti = [];
-        const newProj = { id: Date.now(), projectName };
-        client.progetti.push(newProj);
-        const updateRes = await fetch(`/api/clients/${currentClientId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ progetti: client.progetti })
-        });
-        if (updateRes.ok) {
-          document.getElementById('projectName').value = '';
-          document.getElementById('addProjectForm').style.display = 'none';
-          openEditClientModal(currentClientId);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    window.onload = function() {
-      loadClients();
-      const addClientForm = document.getElementById('addClientForm');
-      addClientForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const newClient = {
-          nome: form.nome.value.trim(),
-          numero: form.numero.value.trim(),
-          id_voiceflow: form.id_voiceflow.value.trim()
-        };
-        try {
-          const res = await fetch('/api/clients', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newClient)
-          });
-          if (res.ok) {
-            closeAddClientModal();
-            loadClients();
-          } else {
-            const err = await res.json();
-            console.error('Errore nell\'aggiunta del cliente:', err.error);
-          }
-        } catch (e) {
-          console.error(e);
-        }
+    function renderClients(arr){
+      const box = document.getElementById('clientList');
+      box.innerHTML = '';
+      arr.forEach(c=>{
+        box.insertAdjacentHTML('beforeend',`
+          <div class="client-item">
+            <strong>${c.nome||'Anonimo'}</strong>
+            <div>
+              <button class="button" style="margin-right:10px" onclick="showClient(${c.id})">Modifica</button>
+              <button class="delete-btn" onclick="deleteClient(${c.id})">Elimina</button>
+            </div>
+          </div>`);
       });
-    };
-  </script>
+    }
+
+/* ---------- CRUD CLIENT ---------- */
+async function showClient(id){
+  currentId = id;
+  try {
+    const r = await fetchAuth(`/api/clients/${id}`);
+    if(!r.ok) throw new Error();
+    const c = await r.json();
+    document.getElementById('clientDetails').innerText = `ID Voiceflow: ${c.id_voiceflow}\nUltima Modifica: ${new Date(c.data_modifica).toLocaleString()}`;
+    document.getElementById('updateNome').value = c.nome || '';
+    document.getElementById('updateNumero').value = c.numero || '';
+    document.getElementById('summaryText').value = c.summary || '';
+    renderConversations(c.conversazioni || []);
+    openEditClientModal();
+  } catch(e) {
+    console.error(e);
+    alert('Errore nel caricamento dei dati del cliente');
+  }
+}
+
+// Aggiungo l'event listener per il form di aggiornamento
+document.getElementById('updateClientForm').addEventListener('submit', updateClientInfo);
+
+async function updateClientInfo(e){
+  e.preventDefault();
+  const payload = {
+    nome: document.getElementById('updateNome').value.trim(),
+    numero: document.getElementById('updateNumero').value.trim()
+  };
+  try {
+    const r = await fetchAuth(`/api/clients/${currentId}`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if(r.ok) {
+      closeEditClientModal();
+      loadClients();
+    } else {
+      alert('Errore nel salvataggio');
+    }
+  } catch(e) {
+    console.error(e);
+    alert('Errore nel salvataggio dei dati');
+  }
+}
+
+async function updateSummary(){
+  const txt = document.getElementById('summaryText').value.trim();
+  try {
+    const r = await fetchAuth(`/api/clients/${currentId}`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({summary: txt})
+    });
+    if(r.ok) {
+      alert('Riassunto salvato');
+    } else {
+      alert('Errore nel salvataggio del riassunto');
+    }
+  } catch(e) {
+    console.error(e);
+    alert('Errore nel salvataggio del riassunto');
+  }
+}
+
+async function deleteClient(id){
+  if(!confirm('Eliminare?')) return;
+  try {
+    const r = await fetchAuth(`/api/clients/${id}`, {method: 'DELETE'});
+    if(r.ok) {
+      loadClients();
+    } else {
+      alert('Errore nell\'eliminazione del cliente');
+    }
+  } catch(e) {
+    console.error(e);
+    alert('Errore nell\'eliminazione del cliente');
+  }
+}
+
+/* ---------- CONVERSAZIONI ---------- */
+function renderConversations(list){
+  const box = document.getElementById('conversationList');
+  box.innerHTML = '';
+  list.forEach(conv => {
+    const div = document.createElement('div');
+    div.className = 'conversation';
+    div.innerHTML = `<div class='user-msg'>${conv.user}</div>` + 
+                   conv.bot.map(b => `<div class='bot-msg'>${b}</div>`).join('');
+    box.appendChild(div);
+  });
+}
+
+function toggleAddConversationForm(){
+  const f = document.getElementById('addConversationForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+async function addConversation(){
+  const user = document.getElementById('convUser').value.trim();
+  const bot = document.getElementById('convBot').value.split('\n').filter(l => l.trim() != '');
+  if(!user || bot.length === 0) return alert('Compila tutti i campi');
+  
+  try {
+    const r0 = await fetchAuth(`/api/clients/${currentId}`);
+    if(!r0.ok) throw new Error();
+    const c = await r0.json();
+    c.conversazioni = (c.conversazioni || []).concat([{
+      id: Date.now(),
+      user,
+      bot
+    }]);
+    
+    const r = await fetchAuth(`/api/clients/${currentId}`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({conversazioni: c.conversazioni})
+    });
+    
+    if(r.ok) {
+      document.getElementById('convUser').value = '';
+      document.getElementById('convBot').value = '';
+      document.getElementById('addConversationForm').style.display = 'none';
+      renderConversations(c.conversazioni);
+    } else {
+      alert('Errore nel salvataggio della conversazione');
+    }
+  } catch(e) {
+    console.error(e);
+    alert('Errore nel salvataggio della conversazione');
+  }
+}
+
+/* ---------- ADD CLIENT ---------- */
+document.getElementById('addClientForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const idv = document.getElementById('id_voiceflow').value.trim();
+  if(!idv) return alert('ID obbligatorio');
+  
+  try {
+    const r = await fetchAuth('/api/clients', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id_voiceflow: idv})
+    });
+    
+    if(r.ok) {
+      closeAddClientModal();
+      document.getElementById('id_voiceflow').value = '';
+      loadClients();
+    } else {
+      const err = await r.json();
+      alert(err.error || 'Errore nel salvataggio');
+    }
+  } catch(e) {
+    console.error(e);
+    alert('Errore nel salvataggio del cliente');
+  }
+});
+
+window.onload = loadClients;
+</script>
 </body>
 </html>

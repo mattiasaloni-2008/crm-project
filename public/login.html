@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="it"><head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Accesso CRM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>body{font-family:'Montserrat',sans-serif;background:#f0f2f5;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+  .login{background:#fff;padding:30px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.1);width:100%;max-width:400px}
+  .button{background:#1a73e8;color:#fff;border:none;padding:10px 20px;width:100%;border-radius:25px;font-size:14px;cursor:pointer}
+  .error{color:red;text-align:center;margin-top:10px;font-size:14px}</style>
+  </head><body>
+  <div class="login">
+    <h2 style="text-align:center;color:#1a73e8">Accesso Protetto</h2>
+    <form id="form">
+      <label>Password:</label>
+      <input id="pwd" type="password" required style="width:100%;padding:10px;margin-bottom:15px;border:1px solid #ccc;border-radius:8px">
+      <button class="button" type="submit">Accedi</button>
+    </form>
+    <div id="err" class="error"></div>
+  </div>
+  
+  <script>
+  document.getElementById('form').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const p=document.getElementById('pwd').value.trim();
+    try{
+      const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})});
+      if(r.ok) location.href='index.html';
+      else     document.getElementById('err').textContent='Credenziali errate';
+    }catch{ document.getElementById('err').textContent='Errore server'; }
+  });
+  </script>
+  </body></html>
+  

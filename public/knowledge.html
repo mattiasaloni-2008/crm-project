@@ -4,271 +4,335 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Knowledge Base</title>
-  <!-- Importa un font moderno -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: #f5f7fa;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    .nav {
-      margin-bottom: 20px;
-    }
-    .nav a {
-      text-decoration: none;
-      color: #1a73e8;
-      font-weight: 600;
-      margin-right: 15px;
-    }
-    h1 {
-      color: #1a1a1a;
-      margin-bottom: 20px;
-    }
-    .button {
-      padding: 10px 20px;
-      border: none;
-      background: #1a73e8;
-      color: #fff;
-      border-radius: 25px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.3s;
-      outline: none;
-    }
-    .button:hover {
-      background: #1669c1;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: left;
-      font-size: 14px;
-    }
-    th {
-      background: #1a73e8;
-      color: #fff;
-    }
-    tr:nth-child(even) {
-      background: #fafafa;
-    }
-    .delete-btn {
-      padding: 6px 12px;
-      background: #e53935;
-      border: none;
-      color: #fff;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: background 0.3s;
-    }
-    .delete-btn:hover {
-      background: #c62828;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-    }
-    .modal-content {
-      background: #fff;
-      margin: 5% auto;
-      padding: 20px;
-      width: 90%;
-      max-width: 600px;
-      border-radius: 12px;
-      max-height: 80vh;
-      overflow-y: auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      position: relative;
-    }
-    .close {
-      position: absolute;
-      right: 15px;
-      top: 10px;
-      font-size: 28px;
-      cursor: pointer;
-      color: #333;
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      font-size: 14px;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-    }
-    input:focus, textarea:focus, select:focus {
-      border-color: #1a73e8;
-    }
+    body{font-family:'Montserrat',sans-serif;background:#f5f7fa;margin:0;padding:20px;color:#333}
+    .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:2px solid #e0e0e0;padding-bottom:10px}
+    .nav-links a{text-decoration:none;color:#1a73e8;font-weight:600;margin-right:15px}
+    h1{font-weight:600;font-size:28px;color:#1a1a1a;margin-bottom:20px}
+    .button{padding:10px 20px;border:none;background:#1a73e8;color:#fff;border-radius:25px;font-size:14px;cursor:pointer;transition:.3s}
+    .button:hover{background:#1669c1}
+    .delete-btn{padding:6px 12px;border:none;background:#e53935;color:#fff;border-radius:4px;font-size:12px;cursor:pointer;transition:.3s}
+    .delete-btn:hover{background:#c62828}
+    .edit-btn{padding:6px 12px;border:none;background:#1a73e8;color:#fff;border-radius:4px;font-size:12px;cursor:pointer;transition:.3s;margin-right:5px}
+    .edit-btn:hover{background:#1669c1}
+    table{width:100%;border-collapse:collapse;margin-bottom:20px}
+    th,td{border:1px solid #e0e0e0;padding:12px;font-size:14px;text-align:left}
+    th{background:#1a73e8;color:#fff}
+    tr:nth-child(even){background:#fafafa}
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5)}
+    .modal-content{background:#fff;margin:5% auto;padding:20px;width:90%;max-width:600px;border-radius:12px;max-height:80vh;overflow-y:auto;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+    .close{position:absolute;right:15px;top:10px;font-size:28px;cursor:pointer;color:#333}
+    label{display:block;margin:10px 0 5px;font-size:14px}
+    input,textarea,select{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:14px}
+    input:focus,textarea:focus,select:focus{border-color:#1a73e8}
   </style>
 </head>
 <body>
-  <!-- Navigazione tra pagine -->
-  <div class="nav">
-    <a href="index.html">Dashboard</a>
-    <a href="knowledge.html">Knowledge Base</a>
-  </div>
-  <h1>Knowledge Base</h1>
-  <button class="button" onclick="openAddKnowledgeModal()">Aggiungi Record</button>
-  <br><br>
-  <!-- Tabella per visualizzare i record KB -->
-  <table>
-    <thead>
-      <tr>
-        <th>Tipo</th>
-        <th>Nome</th>
-        <th>Prezzo</th>
-        <th>Consegna</th>
-        <th>Descrizione</th>
-        <th>Domande</th>
-        <th>Azioni</th>
-      </tr>
-    </thead>
-    <tbody id="knowledgeTableBody"></tbody>
-  </table>
-
-  <!-- Modal: Aggiungi Record Knowledge Base -->
-  <div id="addKnowledgeModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeAddKnowledgeModal()">&times;</span>
-      <h2>Aggiungi Record KB</h2>
-      <form id="addKnowledgeForm">
-        <label>Tipo:</label>
-        <select name="tipo" required>
-          <option value="">Seleziona Tipo</option>
-          <option value="complemento d'arredo">Complemento d'arredo</option>
-          <option value="arredo">Arredo</option>
-          <option value="servizio">Servizio</option>
-        </select>
-        <label>Nome:</label>
-        <input type="text" name="nome" required>
-        <label>Prezzo:</label>
-        <input type="text" name="prezzo" required>
-        <label>Consegna:</label>
-        <input type="text" name="consegna" required>
-        <label>Descrizione:</label>
-        <textarea name="descrizione" style="height:80px;" required></textarea>
-        <label>Domande (una per riga):</label>
-        <textarea name="domande" style="height:80px;"></textarea>
-        <button class="button" type="submit">Aggiungi Record</button>
-      </form>
+  <div class="top-bar">
+    <div class="nav-links">
+      <a href="index.html">Dashboard</a>
+      <a href="knowledge.html">Knowledge Base</a>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="button" onclick="openAddModal()">Aggiungi Record</button>
+      <button class="button" style="background:#e53935" onclick="logout()">Logout</button>
     </div>
   </div>
+  <h1>Knowledge Base</h1>
 
-  <script>
-    let knowledgeItems = [];
+  <table>
+    <thead><tr><th>Tipo</th><th>Nome</th><th>Prezzo</th><th>Consegna</th><th>Descrizione</th><th>Domande</th><th>Azioni</th></tr></thead>
+    <tbody id="kbBody"></tbody>
+  </table>
 
-    async function loadKnowledge() {
-      try {
-        const res = await fetch('/api/knowledge');
-        if (!res.ok) throw new Error("Errore nel caricamento dei record");
-        knowledgeItems = await res.json();
-        renderKnowledge();
-      } catch (e) {
-        console.error(e);
-      }
+  <!-- Modal -->
+  <div id="addModal" class="modal"><div class="modal-content">
+    <span class="close" onclick="closeAddModal()">&times;</span>
+    <h2>Nuovo Record</h2>
+    <form id="addForm">
+      <label>Tipo:</label>
+      <select name="tipo" required>
+        <option value="">Seleziona</option>
+        <option value="complemento d'arredo">Complemento d'arredo</option>
+        <option value="arredo">Arredo</option>
+        <option value="servizio">Servizio</option>
+      </select>
+      <label>Nome:</label><input name="nome" required>
+      
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <div style="flex: 1;">
+          <label>Prezzo Min (€):</label>
+          <input name="prezzoMin" type="number" min="0" required>
+        </div>
+        <div style="flex: 1;">
+          <label>Prezzo Max (€):</label>
+          <input name="prezzoMax" type="number" min="0" required>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <div style="flex: 1;">
+          <label>Consegna Min (giorni):</label>
+          <input name="consegnaMin" type="number" min="0" required>
+        </div>
+        <div style="flex: 1;">
+          <label>Consegna Max (giorni):</label>
+          <input name="consegnaMax" type="number" min="0" required>
+        </div>
+      </div>
+
+      <label>Descrizione:</label><textarea name="descrizione" rows="3" required></textarea>
+      <label>Domande (una per riga):</label><textarea name="domande" rows="3"></textarea>
+      <button class="button" type="submit">Salva</button>
+    </form>
+  </div></div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal"><div class="modal-content">
+    <span class="close" onclick="closeEditModal()">&times;</span>
+    <h2>Modifica Record</h2>
+    <form id="editForm">
+      <input type="hidden" name="id">
+      <label>Tipo:</label>
+      <select name="tipo" required>
+        <option value="">Seleziona</option>
+        <option value="complemento d'arredo">Complemento d'arredo</option>
+        <option value="arredo">Arredo</option>
+        <option value="servizio">Servizio</option>
+      </select>
+      <label>Nome:</label><input name="nome" required>
+      
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <div style="flex: 1;">
+          <label>Prezzo Min (€):</label>
+          <input name="prezzoMin" type="number" min="0" required>
+        </div>
+        <div style="flex: 1;">
+          <label>Prezzo Max (€):</label>
+          <input name="prezzoMax" type="number" min="0" required>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <div style="flex: 1;">
+          <label>Consegna Min (giorni):</label>
+          <input name="consegnaMin" type="number" min="0" required>
+        </div>
+        <div style="flex: 1;">
+          <label>Consegna Max (giorni):</label>
+          <input name="consegnaMax" type="number" min="0" required>
+        </div>
+      </div>
+
+      <label>Descrizione:</label><textarea name="descrizione" rows="3" required></textarea>
+      <label>Domande (una per riga):</label><textarea name="domande" rows="3"></textarea>
+      <button class="button" type="submit">Salva Modifiche</button>
+    </form>
+  </div></div>
+
+<script>
+const fetchAuth=(u,o={})=>fetch(u,{credentials:'same-origin',...o});
+const addModal=document.getElementById('addModal');
+const openAddModal=()=>addModal.style.display='block';
+const closeAddModal=()=>{
+  addModal.style.display='none';
+  document.getElementById('addForm').reset(); // Reset form on close
+};
+
+// Add ESC key handler
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && addModal.style.display === 'block') {
+    closeAddModal();
+  }
+});
+
+window.onclick=e=>{if(e.target===addModal)closeAddModal();};
+let kb=[];
+async function loadKB(){
+  try{
+    const r=await fetchAuth('/api/knowledge');
+    if(!r.ok) throw new Error('Errore nel caricamento dei dati');
+    kb=await r.json();
+    renderKB();
+  }catch(e){
+    console.error(e);
+    alert('Errore nel caricamento della knowledge base: ' + e.message);
+  }
+}
+function renderKB(){const body=document.getElementById('kbBody');body.innerHTML='';kb.forEach(it=>{const dom=it.domande?.length?it.domande.join('<br>'):'';body.insertAdjacentHTML('beforeend',`<tr><td>${it.tipo}</td><td>${it.nome}</td><td>${it.prezzo}</td><td>${it.consegna}</td><td>${it.descrizione}</td><td>${dom}</td><td><button class='delete-btn' onclick='deleteKB(${it.id})'>Elimina</button></td></tr>`);});}
+function logout(){fetch('/api/logout',{method:'POST'}).finally(()=>location.href='login.html');}
+async function deleteKB(id){if(!confirm('Eliminare questo record?'))return;try{const r=await fetchAuth(`/api/knowledge/${id}`,{method:'DELETE'});if(r.ok)loadKB();}catch(e){console.error(e);}}
+
+document.getElementById('addForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const f=e.target;
+  
+  // Validazione dei range
+  const prezzoMin = parseInt(f.prezzoMin.value);
+  const prezzoMax = parseInt(f.prezzoMax.value);
+  const consegnaMin = parseInt(f.consegnaMin.value);
+  const consegnaMax = parseInt(f.consegnaMax.value);
+  
+  if (prezzoMin > prezzoMax) {
+    alert('Il prezzo minimo non può essere maggiore del prezzo massimo');
+    return;
+  }
+  
+  if (consegnaMin > consegnaMax) {
+    alert('La consegna minima non può essere maggiore della consegna massima');
+    return;
+  }
+
+  const data={
+    tipo: f.tipo.value,
+    nome: f.nome.value.trim(),
+    prezzo: prezzoMin === prezzoMax ? `${prezzoMin}€` : `${prezzoMin}-${prezzoMax}€`,
+    consegna: consegnaMin === consegnaMax ? `${consegnaMin} giorni` : `${consegnaMin}-${consegnaMax} giorni`,
+    descrizione: f.descrizione.value.trim(),
+    domande: f.domande.value.split('\n').filter(l=>l.trim())
+  };
+  
+  try{
+    const r=await fetchAuth('/api/knowledge',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    
+    if(!r.ok) {
+      const error = await r.json();
+      throw new Error(error.error || 'Errore nel salvataggio');
     }
+    
+    closeAddModal();
+    f.reset();
+    loadKB();
+  }catch(err){
+    console.error(err);
+    alert('Errore durante il salvataggio: ' + err.message);
+  }
+});
 
-    function renderKnowledge() {
-      const tbody = document.getElementById('knowledgeTableBody');
-      tbody.innerHTML = '';
-      knowledgeItems.forEach(item => {
-        const domandeStr = item.domande && Array.isArray(item.domande) && item.domande.length ? item.domande.join('<br>') : '';
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${item.tipo}</td>
-          <td>${item.nome}</td>
-          <td>${item.prezzo}</td>
-          <td>${item.consegna}</td>
-          <td>${item.descrizione}</td>
-          <td>${domandeStr}</td>
-          <td><button class="delete-btn" onclick="deleteKnowledge(${item.id})">Elimina</button></td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
+const editModal = document.getElementById('editModal');
+const openEditModal = (id) => {
+  const record = kb.find(item => item.id === id);
+  if (!record) return;
 
-    function openAddKnowledgeModal() {
-      document.getElementById('addKnowledgeModal').style.display = 'block';
-    }
-    function closeAddKnowledgeModal() {
-      document.getElementById('addKnowledgeModal').style.display = 'none';
-    }
+  const form = document.getElementById('editForm');
+  form.id.value = record.id;
+  form.tipo.value = record.tipo;
+  form.nome.value = record.nome;
 
-    // Chiusura modale cliccando fuori dal contenuto
-    window.onclick = function(event) {
-      const modal = document.getElementById('addKnowledgeModal');
-      if (event.target === modal) {
-        modal.style.display = 'none';
-      }
-    }
+  // Parse price range
+  const priceMatch = record.prezzo.match(/(\d+)(?:-(\d+))?€/);
+  if (priceMatch) {
+    form.prezzoMin.value = priceMatch[1];
+    form.prezzoMax.value = priceMatch[2] || priceMatch[1];
+  }
 
-    // Funzione per eliminare un record della Knowledge Base
-    async function deleteKnowledge(id) {
-      if (!confirm("Sei sicuro di voler eliminare questo record?")) return;
-      try {
-        const res = await fetch(`/api/knowledge/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error("Errore nell'eliminazione del record");
-        await res.json();
-        loadKnowledge();
-      } catch (e) {
-        console.error(e);
-      }
-    }
+  // Parse delivery range
+  const deliveryMatch = record.consegna.match(/(\d+)(?:-(\d+))?\s+giorni/);
+  if (deliveryMatch) {
+    form.consegnaMin.value = deliveryMatch[1];
+    form.consegnaMax.value = deliveryMatch[2] || deliveryMatch[1];
+  }
 
-    window.onload = function() {
-      loadKnowledge();
-      const addKnowledgeForm = document.getElementById('addKnowledgeForm');
-      addKnowledgeForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const newItem = {
-          tipo: form.tipo.value,
-          nome: form.nome.value.trim(),
-          prezzo: form.prezzo.value.trim(),
-          consegna: form.consegna.value.trim(),
-          descrizione: form.descrizione.value.trim(),
-          domande: form.domande.value.split('\n').filter(x => x.trim() !== '')
-        };
-        console.log("Nuovo record KB da aggiungere:", newItem);
-        try {
-          const res = await fetch('/api/knowledge', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newItem)
-          });
-          if (res.ok) {
-            alert("Record aggiunto con successo!");
-            closeAddKnowledgeModal();
-            loadKnowledge();
-          } else {
-            const err = await res.json();
-            console.error('Errore nell\'aggiunta del record KB:', err.error);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      });
-    };
-  </script>
+  form.descrizione.value = record.descrizione;
+  form.domande.value = record.domande?.join('\n') || '';
+
+  editModal.style.display = 'block';
+};
+
+const closeEditModal = () => {
+  editModal.style.display = 'none';
+  document.getElementById('editForm').reset();
+};
+
+// Add ESC key handler for edit modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && editModal.style.display === 'block') {
+    closeEditModal();
+  }
+});
+
+window.onclick = e => {
+  if (e.target === addModal) closeAddModal();
+  if (e.target === editModal) closeEditModal();
+};
+
+function renderKB() {
+  const body = document.getElementById('kbBody');
+  body.innerHTML = '';
+  kb.forEach(it => {
+    const dom = it.domande?.length ? it.domande.join('<br>') : '';
+    body.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>${it.tipo}</td>
+        <td>${it.nome}</td>
+        <td>${it.prezzo}</td>
+        <td>${it.consegna}</td>
+        <td>${it.descrizione}</td>
+        <td>${dom}</td>
+        <td>
+          <button class='edit-btn' onclick='openEditModal(${it.id})'>Modifica</button>
+          <button class='delete-btn' onclick='deleteKB(${it.id})'>Elimina</button>
+        </td>
+      </tr>
+    `);
+  });
+}
+
+document.getElementById('editForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target;
+  
+  // Validazione dei range
+  const prezzoMin = parseInt(f.prezzoMin.value);
+  const prezzoMax = parseInt(f.prezzoMax.value);
+  const consegnaMin = parseInt(f.consegnaMin.value);
+  const consegnaMax = parseInt(f.consegnaMax.value);
+  
+  if (prezzoMin > prezzoMax) {
+    alert('Il prezzo minimo non può essere maggiore del prezzo massimo');
+    return;
+  }
+  
+  if (consegnaMin > consegnaMax) {
+    alert('La consegna minima non può essere maggiore della consegna massima');
+    return;
+  }
+
+  const data = {
+    tipo: f.tipo.value,
+    nome: f.nome.value.trim(),
+    prezzo: prezzoMin === prezzoMax ? `${prezzoMin}€` : `${prezzoMin}-${prezzoMax}€`,
+    consegna: consegnaMin === consegnaMax ? `${consegnaMin} giorni` : `${consegnaMin}-${consegnaMax} giorni`,
+    descrizione: f.descrizione.value.trim(),
+    domande: f.domande.value.split('\n').filter(l => l.trim())
+  };
+  
+  try {
+    const r = await fetchAuth(`/api/knowledge/${f.id.value}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    
+    if (!r.ok) {
+      const error = await r.json();
+      throw new Error(error.error || 'Errore nel salvataggio');
+    }
+    
+    closeEditModal();
+    loadKB();
+  } catch (err) {
+    console.error(err);
+    alert('Errore durante il salvataggio: ' + err.message);
+  }
+});
+
+window.onload=loadKB;
+</script>
 </body>
 </html>
