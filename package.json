@@ -14,8 +14,9 @@
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "bcrypt": "^5.1.0",
+    "bcrypt": "5.0.1",
     "jsonwebtoken": "^9.0.0",
     "cookie-parser": "^1.4.6"
   }
 }
+Error: /opt/render/project/src/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: invalid ELF header
