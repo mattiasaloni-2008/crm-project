@@ -7,9 +7,10 @@ const cookieParser = require('cookie-parser');
 const bcrypt       = require('bcrypt');
 const jwt          = require('jsonwebtoken');
 const cors         = require('cors');
+const Database     = require('better-sqlite3');
 
 /* ---------- CHATBOT CONFIG ---------- */
-const CHATBOT_API_KEY = process.env.CHATBOT_API_KEY || 'test123';
+const CHATBOT_API_KEY = process.env.CHATBOT_API_KEY ;
 
 /* ---------- APP ---------- */
 const app  = express();
@@ -100,34 +101,92 @@ catch { console.error('⚠️ Errore knowledge.json'); }
 
 const save = (p, d) => fs.writeFileSync(p, JSON.stringify(d, null, 2));
 
+/* ---------- SQLITE SETUP ---------- */
+const db = new Database('crm.sqlite');
+
+db.exec(`
+CREATE TABLE IF NOT EXISTS clients (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id_voiceflow TEXT UNIQUE,
+  nome TEXT,
+  numero TEXT,
+  summary TEXT,
+  data_modifica TEXT,
+  conversazioni TEXT
+);
+
+CREATE TABLE IF NOT EXISTS knowledge (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  tipo TEXT,
+  nome TEXT,
+  prezzo TEXT,
+  consegna TEXT,
+  descrizione TEXT,
+  domande TEXT
+);
+`);
+
 /* ---------- API CLIENTI  (restano uguali) ---------- */
-app.get('/api/clients', (_ , res) => res.json(clienti));
-app.get('/api/clients/:id', (req,res)=>{
-  const c = clienti.find(x=>x.id==req.params.id||x.id_voiceflow==req.params.id);
-  c ? res.json(c) : res.status(404).json({error:'Cliente non trovato'});
+app.get('/api/clients', (_ , res) => {
+  const rows = db.prepare('SELECT * FROM clients').all();
+  // Decodifica conversazioni da JSON
+  rows.forEach(r => {
+    r.conversazioni = r.conversazioni ? JSON.parse(r.conversazioni) : [];
+  });
+  res.json(rows);
 });
-app.post('/api/clients',(req,res)=>{
-  const {id_voiceflow}=req.body;
-  if(!id_voiceflow) return res.status(400).json({error:'id_voiceflow richiesto'});
-  if(clienti.find(c=>c.id_voiceflow===id_voiceflow))
-    return res.status(409).json({error:'Cliente già esistente'});
-  const nuovo={id:Date.now(),id_voiceflow,nome:'',numero:'',summary:'',data_modifica:new Date().toISOString(),conversazioni:[]};
-  clienti.push(nuovo); save(clientsPath,clienti); res.status(201).json(nuovo);
+
+app.get('/api/clients/:id', (req, res) => {
+  const row = db.prepare('SELECT * FROM clients WHERE id = ? OR id_voiceflow = ?').get(req.params.id, req.params.id);
+  if (!row) return res.status(404).json({ error: 'Cliente non trovato' });
+  row.conversazioni = row.conversazioni ? JSON.parse(row.conversazioni) : [];
+  res.json(row);
 });
-app.put('/api/clients/:id',(req,res)=>{
-  const i=clienti.findIndex(c=>c.id==req.params.id);
-  if(i===-1) return res.status(404).json({error:'Cliente non trovato'});
-  clienti[i]={...clienti[i],...req.body,data_modifica:new Date().toISOString()};
-  save(clientsPath,clienti); res.json(clienti[i]);
+
+app.post('/api/clients', (req, res) => {
+  const { id_voiceflow } = req.body;
+  if (!id_voiceflow) return res.status(400).json({ error: 'id_voiceflow richiesto' });
+  const exists = db.prepare('SELECT 1 FROM clients WHERE id_voiceflow = ?').get(id_voiceflow);
+  if (exists) return res.status(409).json({ error: 'Cliente già esistente' });
+  const now = new Date().toISOString();
+  const info = db.prepare('INSERT INTO clients (id_voiceflow, nome, numero, summary, data_modifica, conversazioni) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(id_voiceflow, '', '', '', now, JSON.stringify([]));
+  const nuovo = db.prepare('SELECT * FROM clients WHERE id = ?').get(info.lastInsertRowid);
+  nuovo.conversazioni = [];
+  res.status(201).json(nuovo);
 });
-app.delete('/api/clients/:id',(req,res)=>{
-  const i=clienti.findIndex(c=>c.id==req.params.id);
-  if(i===-1) return res.status(404).json({error:'Cliente non trovato'});
-  clienti.splice(i,1); save(clientsPath,clienti); res.json({success:true});
+
+app.put('/api/clients/:id', (req, res) => {
+  const row = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Cliente non trovato' });
+  const now = new Date().toISOString();
+  // Aggiorna solo i campi forniti
+  const nome = req.body.nome !== undefined ? req.body.nome : row.nome;
+  const numero = req.body.numero !== undefined ? req.body.numero : row.numero;
+  const summary = req.body.summary !== undefined ? req.body.summary : row.summary;
+  const conversazioni = req.body.conversazioni !== undefined ? JSON.stringify(req.body.conversazioni) : row.conversazioni;
+  db.prepare('UPDATE clients SET nome = ?, numero = ?, summary = ?, data_modifica = ?, conversazioni = ? WHERE id = ?')
+    .run(nome, numero, summary, now, conversazioni, req.params.id);
+  const updated = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
+  updated.conversazioni = updated.conversazioni ? JSON.parse(updated.conversazioni) : [];
+  res.json(updated);
+});
+
+app.delete('/api/clients/:id', (req, res) => {
+  const row = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Cliente non trovato' });
+  db.prepare('DELETE FROM clients WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
 });
 
 /* ---------- API KNOWLEDGE ---------- */
-app.get('/api/knowledge',(_ ,res)=>res.json(knowledge));
+app.get('/api/knowledge', (_ , res) => {
+  const rows = db.prepare('SELECT * FROM knowledge').all();
+  rows.forEach(r => {
+    r.domande = r.domande ? JSON.parse(r.domande) : [];
+  });
+  res.json(rows);
+});
 
 // Nuova API per ricerca avanzata
 app.get('/api/knowledge/search', (req, res) => {
@@ -177,24 +236,45 @@ app.get('/api/knowledge/search', (req, res) => {
   res.json(results);
 });
 
-app.post('/api/knowledge',(req,res)=>{
-  const {tipo,nome,prezzo,consegna,descrizione,domande}=req.body;
-  if(!tipo||!nome||!prezzo||!consegna||!descrizione)
-    return res.status(400).json({error:'Campi obbligatori mancanti'});
-  const nuovo={id:Date.now(),tipo,nome,prezzo,consegna,descrizione,domande:domande||[]};
-  knowledge.push(nuovo); save(knowledgePath,knowledge); res.status(201).json(nuovo);
+app.post('/api/knowledge', (req, res) => {
+  const { tipo, nome, prezzo, consegna, descrizione, domande } = req.body;
+  if (!tipo || !nome || !prezzo || !consegna || !descrizione)
+    return res.status(400).json({ error: 'Campi obbligatori mancanti' });
+  const info = db.prepare('INSERT INTO knowledge (tipo, nome, prezzo, consegna, descrizione, domande) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(tipo, nome, prezzo, consegna, descrizione, JSON.stringify(domande || []));
+  const nuovo = db.prepare('SELECT * FROM knowledge WHERE id = ?').get(info.lastInsertRowid);
+  nuovo.domande = nuovo.domande ? JSON.parse(nuovo.domande) : [];
+  res.status(201).json(nuovo);
 });
-app.delete('/api/knowledge/:id',(req,res)=>{
-  const len=knowledge.length; knowledge=knowledge.filter(k=>k.id!=req.params.id);
-  if(len===knowledge.length) return res.status(404).json({error:'Record non trovato'});
-  save(knowledgePath,knowledge); res.json({success:true});
+
+app.put('/api/knowledge/:id', (req, res) => {
+  const row = db.prepare('SELECT * FROM knowledge WHERE id = ?').get(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Record non trovato' });
+  const tipo = req.body.tipo !== undefined ? req.body.tipo : row.tipo;
+  const nome = req.body.nome !== undefined ? req.body.nome : row.nome;
+  const prezzo = req.body.prezzo !== undefined ? req.body.prezzo : row.prezzo;
+  const consegna = req.body.consegna !== undefined ? req.body.consegna : row.consegna;
+  const descrizione = req.body.descrizione !== undefined ? req.body.descrizione : row.descrizione;
+  const domande = req.body.domande !== undefined ? JSON.stringify(req.body.domande) : row.domande;
+  db.prepare('UPDATE knowledge SET tipo = ?, nome = ?, prezzo = ?, consegna = ?, descrizione = ?, domande = ? WHERE id = ?')
+    .run(tipo, nome, prezzo, consegna, descrizione, domande, req.params.id);
+  const updated = db.prepare('SELECT * FROM knowledge WHERE id = ?').get(req.params.id);
+  updated.domande = updated.domande ? JSON.parse(updated.domande) : [];
+  res.json(updated);
+});
+
+app.delete('/api/knowledge/:id', (req, res) => {
+  const row = db.prepare('SELECT * FROM knowledge WHERE id = ?').get(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Record non trovato' });
+  db.prepare('DELETE FROM knowledge WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
 });
 
 /* ---------- CHATBOT API ROUTES ---------- */
 // Middleware per verificare l'API key del chatbot
 const verifyChatbotApiKey = (req, res, next) => {
     const apiKey = req.headers['x-api-key'];
-    if (!apiKey || apiKey !== 'test123') {
+    if (!apiKey || apiKey !== 'Vttr%627/03bxtbDG&Ut32g38') {
         return res.status(401).json({ error: 'API key non valida' });
     }
     next();
