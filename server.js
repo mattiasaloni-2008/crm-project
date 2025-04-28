@@ -194,7 +194,7 @@ app.delete('/api/knowledge/:id',(req,res)=>{
 // Middleware per verificare l'API key del chatbot
 const verifyChatbotApiKey = (req, res, next) => {
     const apiKey = req.headers['x-api-key'];
-    if (!apiKey || apiKey !== 'test123') {
+    if (!apiKey || apiKey !== 'Vttr%627/03bxtbDG&Ut32g38') {
         return res.status(401).json({ error: 'API key non valida' });
     }
     next();
