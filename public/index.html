@@ -3,109 +3,489 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRM Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <title>CRM Modul Group - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- stile identico a Knowledge -->
   <style>
-    body{font-family:'Montserrat',sans-serif;background:#f5f7fa;margin:0;padding:20px;color:#333}
-    .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:2px solid #e0e0e0;padding-bottom:10px}
-    .nav-links a{text-decoration:none;color:#1a73e8;font-weight:600;margin-right:15px}
-    h1{font-weight:600;font-size:28px;color:#1a1a1a;margin-bottom:20px}
-
-    .button{padding:10px 20px;border:none;background:#1a73e8;color:#fff;border-radius:25px;font-size:14px;cursor:pointer;transition:.3s}
-    .button:hover{background:#1669c1}
-    .button-danger{background:#e53935}.button-danger:hover{background:#c62828}
-    select{padding:10px 18px;border:1px solid #ccc;border-radius:25px;font-size:14px;margin-right:10px;background:#fff}
-    select:focus{border-color:#1a73e8}
-
-    .client-item{background:#fff;border:1px solid #e0e0e0;border-radius:12px;margin-bottom:12px;padding:15px;
-                 display:flex;justify-content:space-between;align-items:center;transition:.3s}
-    .client-item:hover{box-shadow:0 4px 8px rgba(0,0,0,.1)}
-
-    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5)}
-    .modal-content{background:#fff;margin:5% auto;padding:20px;width:90%;max-width:600px;border-radius:12px;
-                   max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.15)}
-    .close{position:absolute;right:15px;top:10px;font-size:28px;cursor:pointer;color:#333}
-
-    label{display:block;margin:10px 0 5px;font-size:14px}
-    input,textarea{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:14px}
-    input:focus,textarea:focus{border-color:#1a73e8}
-
-    #conversationContainer{max-height:250px;overflow-y:auto;border:1px solid #e0e0e0;border-radius:8px;padding:10px;background:#fff}
-    .conversation{margin-bottom:8px;padding:6px;border-radius:6px;background:#f0f4ff}
-    .user-msg{background:#e3f2fd;padding:4px;border-radius:4px;margin-bottom:2px}
-    .bot-msg{background:#dcedc8;padding:4px;border-radius:4px}
+    :root {
+      --primary: #4a90e2;
+      --primary-dark: #357abd;
+      --danger: #e74c3c;
+      --danger-dark: #c0392b;
+      --background: #1a1a1a;
+      --surface: #2d2d2d;
+      --text: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --border: rgba(74, 144, 226, 0.2);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .app-container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: var(--surface);
+      padding: 2rem;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      width: 250px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-menu { list-style: none; }
+    .nav-item { margin-bottom: 0.5rem; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(74, 144, 226, 0.1);
+      color: var(--primary);
+    }
+    .main-content {
+      padding: 2rem;
+      margin-left: 250px;
+    }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .card-container {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px !important;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      flex: 1 1 320px;
+      max-width: 350px;
+      min-width: 320px;
+      box-sizing: border-box;
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: var(--primary);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .card-type {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      background: rgba(74, 144, 226, 0.1);
+      color: var(--primary);
+    }
+    .card-content {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      word-break: break-word;
+      white-space: pre-line;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn {
+      padding: 0.28rem 0.7rem;
+      border-radius: 7px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(.4,0,.2,1);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+      background: linear-gradient(120deg, var(--surface), #232b3a 90%);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      box-shadow: 0 1px 6px 0 rgba(74,144,226,0.06);
+    }
+    .btn-primary {
+      background: linear-gradient(120deg, #4a90e2 60%, #357abd 100%);
+      color: #fff;
+      border: none;
+      box-shadow: 0 2px 12px 0 #4a90e233;
+    }
+    .btn-danger {
+      background: linear-gradient(120deg, #e74c3c 60%, #c0392b 100%);
+      color: #fff;
+      border: none;
+      box-shadow: 0 2px 12px 0 #e74c3c33;
+    }
+    .btn:hover {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 4px 18px 0 rgba(74,144,226,0.18);
+      opacity: 0.97;
+      filter: brightness(1.08);
+    }
+    .btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+    .card-actions .btn {
+      padding: 0.28rem 0.7rem;
+      font-size: 0.72rem;
+    }
+    .expandable-list {
+      background: rgba(26, 26, 26, 0.6);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+    .expandable-header {
+      padding: 1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    .expandable-header:hover {
+      background: rgba(74, 144, 226, 0.1);
+    }
+    .expandable-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    .expandable-content.expanded {
+      max-height: 1000px;
+      transition: max-height 0.5s ease-in;
+    }
+    @media (max-width: 768px) {
+      .app-container { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; }
+      .card-container { grid-template-columns: 1fr; }
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(120deg, rgba(74,144,226,0.25) 0%, rgba(26,26,26,0.95) 100%);
+      z-index: 1000;
+      backdrop-filter: blur(8px) saturate(1.2);
+      animation: modalBgFadeIn 0.5s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes modalBgFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-content {
+      background: rgba(45,45,45,0.92);
+      margin: 3rem auto;
+      padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+      width: 95%;
+      max-width: 480px;
+      border-radius: 20px;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 12px 48px 0 rgba(74,144,226,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.18);
+      animation: modalSlideIn 0.5s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes modalSlideIn {
+      from { opacity: 0; transform: translateY(40px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-content h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      color: #fff;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 8px rgba(74,144,226,0.08);
+    }
+    .close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 2rem;
+      color: #4a90e2;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, color 0.2s;
+      z-index: 10;
+      line-height: 1;
+    }
+    .close:hover {
+      color: #e74c3c;
+      transform: scale(1.18) rotate(8deg);
+      text-shadow: 0 2px 12px #e74c3c44;
+    }
+    .form-group {
+      margin-bottom: 1.1rem;
+      transition: background 0.2s;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+      box-shadow: 0 1px 8px 0 rgba(74,144,226,0.04);
+      min-height: 60px;
+      max-height: none !important;
+      overflow-y: hidden;
+      resize: none;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #4a90e2;
+      background: rgba(74,144,226,0.08);
+      box-shadow: 0 0 0 2px #4a90e244, 0 2px 12px 0 rgba(74,144,226,0.10);
+    }
+    .chat-container {
+      background: rgba(74,144,226,0.06);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+      max-height: 320px;
+      overflow-y: auto;
+      box-shadow: 0 1px 8px 0 #4a90e211;
+    }
+    .chat-message {
+      margin-bottom: 1.1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-message.user {
+      align-items: flex-start;
+    }
+    .chat-message.bot {
+      align-items: flex-end;
+    }
+    .chat-bubble {
+      padding: 0.75rem 1rem;
+      border-radius: 16px;
+      max-width: 80%;
+      margin-bottom: 0.5rem;
+    }
+    .chat-bubble.user {
+      background: #4a90e2;
+      color: white;
+      border-radius: 16px 16px 4px 16px;
+      padding: 0.7rem 1.1rem;
+      margin-bottom: 0.3rem;
+      font-size: 1rem;
+    }
+    .chat-bubble.bot {
+      background: #2d2d2d;
+      color: #fff;
+      border-radius: 16px 16px 16px 4px;
+      padding: 0.7rem 1.1rem;
+      margin: 0.2rem 0 0 24px;
+      font-size: 1rem;
+      max-width: 80%;
+    }
+    .chat-input {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .modal-content, .modal-content * {
+      font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      letter-spacing: 0.01em;
+    }
+    .detail-box {
+      background: rgba(74,144,226,0.08);
+      border: 1.5px solid #4a90e2;
+      border-radius: 14px;
+      box-shadow: 0 2px 16px 0 rgba(74,144,226,0.10);
+      padding: 1.1rem 1.2rem;
+      margin-bottom: 1.2rem;
+      color: #eaf3ff;
+      font-size: 1.08rem;
+      font-family: 'Poppins', 'Inter', sans-serif;
+      transition: box-shadow 0.2s, border 0.2s;
+    }
+    .detail-box:focus-within, .detail-box:hover {
+      box-shadow: 0 4px 24px 0 #4a90e244;
+      border-color: #357abd;
+    }
+    .summary-box {
+      background: rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      margin-bottom: 1.1rem;
+      color: #eaf3ff;
+      font-size: 1.13rem;
+      font-weight: 500;
+      line-height: 1.6;
+      border-left: 4px solid #4a90e2;
+    }
   </style>
 </head>
 
 <body>
-  <!-- Barra in alto -->
-  <div class="top-bar">
-    <div class="nav-links">
-      <a href="index.html">Dashboard</a>
-      <a href="knowledge.html">Knowledge Base</a>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="logo">
+        <span style="font-size:1.5em;color:#4a90e2;font-weight:700;">CRM System</span>
     </div>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <button class="button" onclick="openAddClientModal()">Aggiungi Cliente</button>
-      <select id="filterSelect" onchange="applyFilter()">
-        <option value="date">Ordina per Data</option>
-        <option value="alphabet">Ordina A‑Z</option>
-      </select>
-      <button class="button button-danger" onclick="logout()">Logout</button>
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="index.html" class="nav-link active">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a href="knowledge.html" class="nav-link">Knowledge Base</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <header class="page-header" style="display:flex;justify-content:space-between;align-items:center;gap:2rem;">
+        <h1 class="page-title" style="margin:0;">Dashboard Clienti</h1>
+        <div style="display:flex;gap:1rem;align-items:center;">
+          <button class="btn btn-primary" id="addClientBtn" style="margin:0;">AGGIUNGI CLIENTE</button>
+          <button class="btn btn-danger" id="logoutBtn" style="margin:0;">LOGOUT</button>
     </div>
+      </header>
+      <div class="card-container" id="clientList"></div>
+    </main>
   </div>
 
-  <h1>Dashboard Clienti</h1>
-  <div id="clientList"></div>
-
-  <!-- Modal Aggiungi Cliente -->
+  <!-- Modale per aggiungere un cliente -->
   <div id="addClientModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeAddClientModal()">&times;</span>
-      <h2>Aggiungi Cliente</h2>
+      <h2 style="margin-bottom:1.5rem;">Aggiungi Cliente</h2>
       <form id="addClientForm">
-        <label>ID Voiceflow:</label>
-        <input id="id_voiceflow" required />
-        <button class="button" type="submit">Crea Cliente</button>
+        <div class="form-group">
+          <label class="form-label">ID Voiceflow:</label>
+          <input id="id_voiceflow" class="form-control" required />
+        </div>
+        <button class="btn btn-primary" type="submit">Crea Cliente</button>
       </form>
     </div>
   </div>
 
-  <!-- Modal Modifica Cliente -->
+  <!-- Modale per modificare un cliente -->
   <div id="editClientModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeEditClientModal()">&times;</span>
-      <h2>Dettagli Cliente</h2>
-      <div id="clientDetails"></div><hr>
-      <h3>Aggiorna Informazioni</h3>
+      <h2 style="margin-bottom:1.5rem;">Dettagli Cliente</h2>
+      <div id="clientDetails"></div>
       <form id="updateClientForm">
-        <label>Nome:</label><input id="updateNome" />
-        <label>Numero:</label><input id="updateNumero" />
-        <button class="button" type="submit">Salva</button>
+        <div class="form-group">
+          <label class="form-label">Nome:</label>
+          <input id="updateNome" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Numero:</label>
+          <input id="updateNumero" class="form-control" />
+        </div>
+        <div class="expandable-list">
+          <div class="expandable-header" id="summaryHeader" style="cursor:pointer;">
+            <h4 style="margin:0;color:#4a90e2;">Riassunto</h4>
+            <span style="font-size:1.2em;">&#9650;</span>
+          </div>
+          <div class="expandable-content expanded" id="summaryContent">
+            <div class="form-group" style="margin-bottom:0;">
+              <textarea id="summaryText" class="form-control"></textarea>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Salva Modifiche</button>
       </form>
-      <div id="summarySection">
-        <h3>Riassunto</h3>
-        <textarea id="summaryText"></textarea>
-        <button class="button" onclick="updateSummary()">Salva Riassunto</button>
-      </div><hr>
-      <h3>Conversazioni</h3>
-      <div id="conversationContainer"><div id="conversationList"></div></div>
-      <button class="button" onclick="toggleAddConversationForm()">Aggiungi Conversazione</button>
-      <div id="addConversationForm" style="display:none;margin-top:10px;">
-        <label>Messaggio Utente:</label><textarea id="convUser" rows="3"></textarea>
-        <label>Messaggi Bot (uno per riga):</label><textarea id="convBot" rows="3"></textarea>
-        <button class="button" type="button" onclick="addConversation()">Aggiungi</button>
+      <div class="chat-container">
+        <h3 style="margin-bottom:1rem;">Conversazioni</h3>
+        <div id="chatContainer"></div>
+        <form id="addConversationForm" class="chat-input">
+          <div class="form-group">
+            <label class="form-label">Messaggio Utente:</label>
+            <input id="convUser" class="form-control" placeholder="Scrivi un messaggio..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Risposte Bot (una per riga):</label>
+            <textarea id="convBot" class="form-control" rows="2" placeholder="Risposte bot, una per riga..."></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">Aggiungi Conversazione</button>
+        </form>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript DOPO i modali  -->
-  <script>
-    /* ---------- FETCH helper ---------- */
-    const fetchAuth = (u, o={}) => fetch(u, {credentials: 'same-origin', ...o});
+  <footer style="text-align:center;margin-top:2rem;">
+    <a href="/privacy.html" target="_blank" style="color:#4a90e2;">Privacy Policy</a>
+  </footer>
 
-    /* ---------- MODAL refs ---------- */
+  <script>
+    // Modal logic
     const addModal  = document.getElementById('addClientModal');
     const editModal = document.getElementById('editClientModal');
     const openAddClientModal   = () => addModal.style.display  = 'block';
@@ -117,53 +497,111 @@
       if (e.target === editModal) closeEditClientModal();
     };
 
-    /* ---------- STATE ---------- */
-    let clients = []; let currentId = null;
+    let clients = [], currentId = null;
 
-    /* ---------- LOAD & RENDER ---------- */
     async function loadClients(){
       try{
-        const r = await fetchAuth('/api/clients');
+        const r = await fetch('/api/clients');
         if(!r.ok) throw new Error();
         clients = await r.json();
-        applyFilter();
+        renderClients(clients);
       }catch(err){ console.error(err); }
     }
-    function applyFilter(){
-      const mode = document.getElementById('filterSelect').value;
-      const sorted = [...clients].sort(
-        mode==='alphabet'
-          ? (a,b)=>(a.nome||'').localeCompare(b.nome||'')
-          : (a,b)=>new Date(b.data_modifica)-new Date(a.data_modifica)
-      );
-      renderClients(sorted);
-    }
+
     function renderClients(arr){
       const box = document.getElementById('clientList');
       box.innerHTML = '';
       arr.forEach(c=>{
-        box.insertAdjacentHTML('beforeend',`
-          <div class="client-item">
-            <strong>${c.nome||'Anonimo'}</strong>
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
             <div>
-              <button class="button" style="margin-right:10px" onclick="showClient(${c.id})">Modifica</button>
-              <button class="delete-btn" onclick="deleteClient(${c.id})">Elimina</button>
+              <div class="card-title" style="font-size:1.2em;font-weight:600;">${c.nome||'Anonimo'}</div>
+              <div class="card-type" style="font-size:0.9em;color:#4a90e2;margin-top:2px;">Cliente</div>
             </div>
-          </div>`);
+            <div class="card-actions" style="display:flex;gap:8px;">
+              <button class="btn btn-primary btn-edit">Modifica</button>
+              <button class="btn btn-danger btn-delete">Elimina</button>
+            </div>
+          </div>
+          <div class="card-content" style="margin:10px 0 0 0; color:rgba(255,255,255,0.8);">
+            ${c.summary ? `<div>${c.summary}</div>` : ''}
+          </div>
+          <div class="expandable-list">
+            <div class="expandable-header">
+              <h4 style='margin:0;color:#4a90e2;'>Dettagli</h4>
+              <span style='font-size:1.2em;'>&#9660;</span>
+            </div>
+            <div class="expandable-content">
+              <div><b>Nome:</b> ${c.nome||'Anonimo'}</div>
+              ${c.numero ? `<div><b>Numero:</b> ${c.numero}</div>` : ''}
+              <div><b>Conversazioni:</b> ${c.conversazioni && c.conversazioni.length ? c.conversazioni.length : 0}</div>
+            </div>
+          </div>
+        `;
+        // Tendina dettagli
+        card.querySelector('.expandable-header').onclick = function() {
+          const content = this.nextElementSibling;
+          content.classList.toggle('expanded');
+          this.querySelector('span').textContent = content.classList.contains('expanded') ? '\u25B2' : '\u25BC';
+        };
+        // Bottoni header
+        card.querySelector('.btn-edit').onclick = () => showClient(c.id);
+        card.querySelector('.btn-delete').onclick = () => deleteClient(c.id);
+        box.appendChild(card);
       });
     }
 
-/* ---------- CRUD CLIENT ---------- */
+    // Funzione per auto-resize delle textarea
+    function autoResizeTextarea(el) {
+      el.style.height = 'auto';
+      el.style.height = (el.scrollHeight) + 'px';
+    }
+
+    // Applica l'auto-resize a tutte le textarea con la classe 'form-control'
+    document.querySelectorAll('textarea.form-control').forEach(textarea => {
+      textarea.addEventListener('input', function() {
+        autoResizeTextarea(this);
+      });
+      // Resize iniziale se già popolata
+      autoResizeTextarea(textarea);
+    });
+
+    // Espandibile per il riassunto
+    const summaryHeader = document.getElementById('summaryHeader');
+    const summaryContent = document.getElementById('summaryContent');
+    if (summaryHeader && summaryContent) {
+      summaryHeader.onclick = function() {
+        summaryContent.classList.toggle('expanded');
+        this.querySelector('span').textContent = summaryContent.classList.contains('expanded') ? '\u25B2' : '\u25BC';
+        if (summaryContent.classList.contains('expanded')) {
+          // Forza l'auto-resize quando la sezione viene aperta
+          const summaryEl = document.getElementById('summaryText');
+          if (summaryEl) autoResizeTextarea(summaryEl);
+        }
+      };
+      // Di default aperto
+      summaryContent.classList.add('expanded');
+      summaryHeader.querySelector('span').textContent = '\u25B2';
+    }
+
 async function showClient(id){
   currentId = id;
   try {
-    const r = await fetchAuth(`/api/clients/${id}`);
+        const r = await fetch(`/api/clients/${id}`);
     if(!r.ok) throw new Error();
     const c = await r.json();
-    document.getElementById('clientDetails').innerText = `ID Voiceflow: ${c.id_voiceflow}\nUltima Modifica: ${new Date(c.data_modifica).toLocaleString()}`;
     document.getElementById('updateNome').value = c.nome || '';
     document.getElementById('updateNumero').value = c.numero || '';
-    document.getElementById('summaryText').value = c.summary || '';
+        const summaryEl = document.getElementById('summaryText');
+        summaryEl.value = c.summary || '';
+        autoResizeTextarea(summaryEl);
+        // Dettagli cliente
+        document.getElementById('clientDetails').innerHTML = `<div class='detail-box'><b>ID Voiceflow:</b> ${c.id_voiceflow}<br><b>Ultima Modifica:</b> ${new Date(c.data_modifica).toLocaleString()}</div>`;
+        // Riassunto
+        document.querySelector('.modal-content .summary-box') ?
+          document.querySelector('.modal-content .summary-box').innerText = c.summary || '' : null;
     renderConversations(c.conversazioni || []);
     openEditClientModal();
   } catch(e) {
@@ -172,17 +610,40 @@ async function showClient(id){
   }
 }
 
-// Aggiungo l'event listener per il form di aggiornamento
-document.getElementById('updateClientForm').addEventListener('submit', updateClientInfo);
+    document.getElementById('addClientBtn').onclick = openAddClientModal;
+    document.getElementById('addClientForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const idv = document.getElementById('id_voiceflow').value.trim();
+      if(!idv) return alert('ID obbligatorio');
+      try {
+        const r = await fetch('/api/clients', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({id_voiceflow: idv})
+        });
+        if(r.ok) {
+          closeAddClientModal();
+          document.getElementById('id_voiceflow').value = '';
+          loadClients();
+        } else {
+          const err = await r.json();
+          alert(err.error || 'Errore nel salvataggio');
+        }
+      } catch(e) {
+        console.error(e);
+        alert('Errore nel salvataggio del cliente');
+      }
+    });
 
-async function updateClientInfo(e){
+    document.getElementById('updateClientForm').addEventListener('submit', async function(e){
   e.preventDefault();
   const payload = {
     nome: document.getElementById('updateNome').value.trim(),
-    numero: document.getElementById('updateNumero').value.trim()
+        numero: document.getElementById('updateNumero').value.trim(),
+        summary: document.getElementById('summaryText').value.trim()
   };
   try {
-    const r = await fetchAuth(`/api/clients/${currentId}`, {
+        const r = await fetch(`/api/clients/${currentId}`, {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(payload)
@@ -197,31 +658,12 @@ async function updateClientInfo(e){
     console.error(e);
     alert('Errore nel salvataggio dei dati');
   }
-}
-
-async function updateSummary(){
-  const txt = document.getElementById('summaryText').value.trim();
-  try {
-    const r = await fetchAuth(`/api/clients/${currentId}`, {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({summary: txt})
     });
-    if(r.ok) {
-      alert('Riassunto salvato');
-    } else {
-      alert('Errore nel salvataggio del riassunto');
-    }
-  } catch(e) {
-    console.error(e);
-    alert('Errore nel salvataggio del riassunto');
-  }
-}
 
 async function deleteClient(id){
   if(!confirm('Eliminare?')) return;
   try {
-    const r = await fetchAuth(`/api/clients/${id}`, {method: 'DELETE'});
+        const r = await fetch(`/api/clients/${id}`, {method: 'DELETE'});
     if(r.ok) {
       loadClients();
     } else {
@@ -233,31 +675,27 @@ async function deleteClient(id){
   }
 }
 
-/* ---------- CONVERSAZIONI ---------- */
 function renderConversations(list){
-  const box = document.getElementById('conversationList');
+      const box = document.getElementById('chatContainer');
   box.innerHTML = '';
   list.forEach(conv => {
-    const div = document.createElement('div');
-    div.className = 'conversation';
-    div.innerHTML = `<div class='user-msg'>${conv.user}</div>` + 
-                   conv.bot.map(b => `<div class='bot-msg'>${b}</div>`).join('');
-    box.appendChild(div);
-  });
-}
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message user';
+        messageDiv.innerHTML = `
+          <div class="chat-bubble user">${conv.user}</div>
+          ${conv.bot ? conv.bot.map(b => `<div class="chat-bubble bot">${b}</div>`).join('') : ''}
+        `;
+        box.appendChild(messageDiv);
+      });
+    }
 
-function toggleAddConversationForm(){
-  const f = document.getElementById('addConversationForm');
-  f.style.display = f.style.display === 'none' ? 'block' : 'none';
-}
-
-async function addConversation(){
+    document.getElementById('addConversationForm').addEventListener('submit', async function(e){
+      e.preventDefault();
   const user = document.getElementById('convUser').value.trim();
   const bot = document.getElementById('convBot').value.split('\n').filter(l => l.trim() != '');
   if(!user || bot.length === 0) return alert('Compila tutti i campi');
-  
   try {
-    const r0 = await fetchAuth(`/api/clients/${currentId}`);
+        const r0 = await fetch(`/api/clients/${currentId}`);
     if(!r0.ok) throw new Error();
     const c = await r0.json();
     c.conversazioni = (c.conversazioni || []).concat([{
@@ -265,17 +703,14 @@ async function addConversation(){
       user,
       bot
     }]);
-    
-    const r = await fetchAuth(`/api/clients/${currentId}`, {
+        const r = await fetch(`/api/clients/${currentId}`, {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({conversazioni: c.conversazioni})
     });
-    
     if(r.ok) {
       document.getElementById('convUser').value = '';
       document.getElementById('convBot').value = '';
-      document.getElementById('addConversationForm').style.display = 'none';
       renderConversations(c.conversazioni);
     } else {
       alert('Errore nel salvataggio della conversazione');
@@ -284,34 +719,12 @@ async function addConversation(){
     console.error(e);
     alert('Errore nel salvataggio della conversazione');
   }
-}
-
-/* ---------- ADD CLIENT ---------- */
-document.getElementById('addClientForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const idv = document.getElementById('id_voiceflow').value.trim();
-  if(!idv) return alert('ID obbligatorio');
-  
-  try {
-    const r = await fetchAuth('/api/clients', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({id_voiceflow: idv})
-    });
-    
-    if(r.ok) {
-      closeAddClientModal();
-      document.getElementById('id_voiceflow').value = '';
-      loadClients();
-    } else {
-      const err = await r.json();
-      alert(err.error || 'Errore nel salvataggio');
-    }
-  } catch(e) {
-    console.error(e);
-    alert('Errore nel salvataggio del cliente');
-  }
 });
+
+document.getElementById('logoutBtn').onclick = async function() {
+  await fetch('/api/logout', { method: 'POST' });
+  window.location.href = '/login.html';
+};
 
 window.onload = loadClients;
 </script>
