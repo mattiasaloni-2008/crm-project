@@ -113,9 +113,15 @@ async function query(text, params) {
 /* ---------- CHATBOT API ROUTES ---------- */
 // Middleware per verificare l'API key del chatbot
 const verifyChatbotApiKey = (req, res, next) => {
+<<<<<<< HEAD
     const apiKey = req.headers['x-api-key'] || req.headers['X-API-KEY'];
     if (!apiKey || apiKey !== process.env.CHATBOT_API_KEY) {
         return res.status(401).json({ error: 'API key non valida o mancante' });
+=======
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey || apiKey !== 'Vttr%627/03bxtbDG&Ut32g38') {
+        return res.status(401).json({ error: 'API key non valida' });
+>>>>>>> 0a9a367ac1ac57192974e114ff78a3a6a2adbbcc
     }
     next();
 };
